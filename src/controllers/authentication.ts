@@ -1,17 +1,20 @@
 import express from "express";
 
 import { getUserByEmail, createUser } from "../db/users";
-import { random, authentication } from "../helpers";
+import { authentication, random } from "../helpers";
 
 export const login = async (req: express.Request, res: express.Response) => {
   try {
     const { email, password } = req.body;
+
     if (!email || !password) {
       return res.sendStatus(400);
     }
-    const user = await await getUserByEmail(email).select(
-      "+authentication.salt +authentication.password "
+
+    const user = await getUserByEmail(email).select(
+      "+authentication.salt +authentication.password"
     );
+
     if (!user) {
       return res.sendStatus(400);
     }
@@ -30,7 +33,7 @@ export const login = async (req: express.Request, res: express.Response) => {
 
     await user.save();
 
-    res.cookie("ARMAGAN-AUTH", user.authentication.sessionToken, {
+    res.cookie("ANTONIO-AUTH", user.authentication.sessionToken, {
       domain: "localhost",
       path: "/",
     });
@@ -51,12 +54,12 @@ export const register = async (req: express.Request, res: express.Response) => {
     }
 
     const existingUser = await getUserByEmail(email);
+
     if (existingUser) {
       return res.sendStatus(400);
     }
 
     const salt = random();
-
     const user = await createUser({
       email,
       username,
